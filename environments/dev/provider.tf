@@ -6,10 +6,10 @@ terraform {
     }
   }
     backend "azurerm" {
-      resource_group_name  = "agent_rg"
-      storage_account_name = "satishstorage1122"
-      container_name       = "containersatish"
-      key                  = "infra-hub-spoke.tfstate"
+    #   resource_group_name  = "agent_rg"
+    #   storage_account_name = "satishstorage1122"
+    #   container_name       = "containersatish"
+    #   key                  = "infra-hub-spoke.tfstate"
     }
 }
 #provider subscription id
