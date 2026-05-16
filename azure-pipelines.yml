@@ -2,8 +2,8 @@ trigger: none
 
 pool: Default
 
-variables: 
- working_path: $(System.DefaultWorkingDirectory)/environments/dev
+# variables: 
+#  working_path: $(System.DefaultWorkingDirectory)/environments/dev
 
 stages:
   - stage:
@@ -20,7 +20,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'init'
-            workingDirectory: '$(working_path)'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
             backendServiceArm: 'serviceconnection-may'
             backendAzureRmResourceGroupName: 'agent_rg'
             backendAzureRmStorageAccountName: 'satishstorage1122'
