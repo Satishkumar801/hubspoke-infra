@@ -13,6 +13,7 @@ stages:
           inputs:
             terraformVersion: 'latest'
         - task: TerraformTask@5
+          displayName: terraform init
           inputs:
             provider: 'azurerm'
             command: 'init'
@@ -22,4 +23,29 @@ stages:
             backendAzureRmStorageAccountName: 'satishstorage1122'
             backendAzureRmContainerName: 'containersatish'
             backendAzureRmKey: 'infra-hub-spoke.tfstate'
+        - task: TerraformTask@5
+          displayName: terraform FMT
+          inputs:
+            provider: 'azurerm'
+            command: 'custom'
+            outputTo: 'console'
+            customCommand: 'terraform fmt'
+            environmentServiceNameAzureRM: 'serviceconnection-may'
+        - task: TerraformTask@5
+          displayName: terraform validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+
+  - stage:
+    displayName: sacning tools
+    jobs:
+      - job: 
+        displayName: tfsec-checkov
+        steps:
+        - task: tfsec@1
+          inputs:
+            version: 'v1.26.0'
+            dir: '$(System.DefaultWorkingDirectory)/s'
+
 
