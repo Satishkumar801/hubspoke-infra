@@ -7,4 +7,8 @@ rgname1 = {
     rgname   = "satishtest1"
     location = "east us"
   }
+    rg3 = {
+    rgname   = "satishtest2"
+    location = "east us"
+  }
 }
