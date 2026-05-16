@@ -5,37 +5,125 @@ pool:
   name: Default
 
 stages:
-  - stage: Terraformlifecycle
-# =========================
-# STAGE 1 : VALIDATE
-# =========================
-    jobs:
-      - job: terraforminstall
-        displayName: terraform-install
-        steps:
-          - task: TerraformInstaller@1
-            displayName: terraform-install
-            inputs:
-              terraformVersion: 'latest'
 
-      - job: terraforminit
-        displayName: terraforn-init
-        steps:
-            - task: TerraformTask@5
-              inputs:
-                provider: 'azurerm'
-                command: 'init'
-                workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-                backendServiceArm: 'serviceconnection-may'
-                backendAzureRmStorageAccountName: 'satishstorage1122'
-                backendAzureRmContainerName: 'containersatish'
-                backendAzureRmKey: 'infra-hub-spoke.tfstate'
+# =========================
+# TERRAFORM STAGE
+# =========================
+- stage: Terraformlifecycle
+  displayName: Terraform Lifecycle
 
-            - task: TerraformTask@5
-              inputs:
-                    provider: 'azurerm'
-                    command: 'validate'
-                    workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
+  jobs:
+
+  # =========================
+  # JOB 1 : INSTALL TERRAFORM
+  # =========================
+  - job: terraforminstall
+    displayName: terraform-install
+
+    steps:
+
+    # Install unzip
+    - script: |
+        sudo apt update
+        sudo apt install unzip -y
+      displayName: Install unzip
+
+    # Install Terraform
+    - task: TerraformInstaller@1
+      displayName: terraform-install
+      inputs:
+        terraformVersion: '1.6.6'
+
+    # Verify Terraform
+    - script: |
+        terraform --version
+      displayName: Check Terraform Version
+
+  # =========================
+  # JOB 2 : TERRAFORM INIT & VALIDATE
+  # =========================
+  - job: terraforminit
+    displayName: terraform-init
+
+    dependsOn: terraforminstall
+
+    steps:
+
+    # Install unzip again
+    - script: |
+        sudo apt update
+        sudo apt install unzip -y
+      displayName: Install unzip
+
+    # Install Terraform again
+    - task: TerraformInstaller@1
+      displayName: terraform-install
+      inputs:
+        terraformVersion: '1.6.6'
+
+    # Terraform Init
+    - task: TerraformTask@5
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
+        backendServiceArm: 'serviceconnection-may'
+        backendAzureRmStorageAccountName: 'satishstorage1122'
+        backendAzureRmContainerName: 'containersatish'
+        backendAzureRmKey: 'infra-hub-spoke.tfstate'
+
+    # Terraform Validate
+    - task: TerraformTask@5
+      displayName: Terraform Validate
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
+
+# trigger:
+# - main
+
+# pool:
+#   name: Default
+
+# stages:
+#   - stage: Terraformlifecycle
+# # =========================
+# # STAGE 1 : VALIDATE
+# # =========================
+#     jobs:
+#       - job: terraforminstall
+#         displayName: terraform-install
+#         steps:
+#         # First install unzip
+#           - script: |
+#               sudo apt update
+#               sudo apt install unzip -y
+#             displayName: "Install unzip"
+#           - task: TerraformInstaller@1
+#             displayName: terraform-install
+#             inputs:
+#               terraformVersion: 'latest'
+
+#       - job: terraforminit
+#         displayName: terraforn-init
+#         steps:
+#             - task: TerraformTask@5
+#               inputs:
+#                 provider: 'azurerm'
+#                 command: 'init'
+#                 workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
+#                 backendServiceArm: 'serviceconnection-may'
+#                 backendAzureRmStorageAccountName: 'satishstorage1122'
+#                 backendAzureRmContainerName: 'containersatish'
+#                 backendAzureRmKey: 'infra-hub-spoke.tfstate'
+
+#             - task: TerraformTask@5
+#               inputs:
+#                     provider: 'azurerm'
+#                     command: 'validate'
+#                     workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
 
 
 
