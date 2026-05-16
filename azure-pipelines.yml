@@ -1,166 +1,25 @@
-trigger:
-- main
+trigger: none
 
-pool:
-  name: Default
+pool: Default
 
 stages:
-- stage: TerraformLifecycle
-  displayName: Terraform Lifecycle
-
-  jobs:
-  - job: TerraformJob
-    displayName: Terraform Install Init Validate
-
-    steps:
-
-    # Install unzip
-    - script: |
-        sudo apt update
-        sudo apt install unzip -y
-      displayName: Install unzip
-
-    # Install Terraform
-    - task: TerraformInstaller@1
-      displayName: Install Terraform
-      inputs:
-        terraformVersion: '1.6.6'
-
-    # Verify Terraform
-    - script: |
-        terraform --version
-      displayName: Verify Terraform
-
-    # Terraform Init
-    - task: TerraformTask@5
-      displayName: Terraform Init
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-        backendServiceArm: 'serviceconnection-may'
-        backendAzureRmStorageAccountName: 'satishstorage1122'
-        backendAzureRmContainerName: 'containersatish'
-        backendAzureRmKey: 'infra-hub-spoke.tfstate'
-
-    # Terraform Validate
-    - task: TerraformTask@5
-      displayName: Terraform Validate
-      inputs:
-        provider: 'azurerm'
-        command: 'validate'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-
-# trigger:
-# - main
-
-# pool:
-#   name: Default
-
-# stages:
-#   - stage: Terraformlifecycle
-# # =========================
-# # STAGE 1 : VALIDATE
-# # =========================
-#     jobs:
-#       - job: terraforminstall
-#         displayName: terraform-install
-#         steps:
-#         # First install unzip
-#           - script: |
-#               sudo apt update
-#               sudo apt install unzip -y
-#             displayName: "Install unzip"
-#           - task: TerraformInstaller@1
-#             displayName: terraform-install
-#             inputs:
-#               terraformVersion: 'latest'
-
-#       - job: terraforminit
-#         displayName: terraforn-init
-#         steps:
-#             - task: TerraformTask@5
-#               inputs:
-#                 provider: 'azurerm'
-#                 command: 'init'
-#                 workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-#                 backendServiceArm: 'serviceconnection-may'
-#                 backendAzureRmStorageAccountName: 'satishstorage1122'
-#                 backendAzureRmContainerName: 'containersatish'
-#                 backendAzureRmKey: 'infra-hub-spoke.tfstate'
-
-#             - task: TerraformTask@5
-#               inputs:
-#                     provider: 'azurerm'
-#                     command: 'validate'
-#                     workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-
-
-
-# =========================
-# STAGE 2 : PLAN
-# =========================
-# - stage: Plan
-#   displayName: "Terraform Plan Stage"
-
-#   dependsOn: Validate
-
-#   jobs:
-#   - job: TerraformPlan
-#     displayName: "Generate Terraform Plan"
-
-#     steps:
-
-#     # Install Terraform
-#     - task: TerraformInstaller@1
-#       displayName: "Install Terraform"
-#       inputs:
-#         terraformVersion: $(terraformVersion)
-
-#     # Terraform Init
-#     - script: |
-#         terraform init
-#       displayName: "Terraform Init"
-
-#     # Terraform Plan
-#     - script: |
-#         terraform plan -out=tfplan
-#       displayName: "Terraform Plan"
-
-# # =========================
-# # STAGE 3 : APPLY
-# # =========================
-# - stage: Apply
-#   displayName: "Terraform Apply Stage"
-
-#   dependsOn: Plan
-
-#   jobs:
-#   - deployment: TerraformApply
-#     displayName: "Deploy Infrastructure"
-
-#     environment: Production
-
-#     strategy:
-#       runOnce:
-#         deploy:
-
-#           steps:
-
-#           # Install Terraform
-#           - task: TerraformInstaller@1
-#             displayName: "Install Terraform"
-#             inputs:
-#               terraformVersion: $(terraformVersion)
-
-#           # Terraform Init
-#           - script: |
-#               terraform init
-#             displayName: "Terraform Init"
-
-#           # Terraform Apply
-#           - script: |
-#               terraform apply -auto-approve
-#             displayName: "Terraform Apply"
-
+  - stage:
+    displayName: Initplan 
+    jobs:
+      - job: 
+        displayName: job terraforminit
+        steps:
+        - task: TerraformInstaller@1
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)s'
+            backendServiceArm: 'serviceconnection-may'
+            backendAzureRmResourceGroupName: 'agent_rg'
+            backendAzureRmStorageAccountName: 'satishstorage1122'
+            backendAzureRmContainerName: 'containersatish'
+            backendAzureRmKey: 'infra-hub-spoke.tfstate'
 
